@@ -8,4 +8,5 @@ urlpatterns = [
     path("", views.index, name="index"),
     path("login/", LoginView.as_view(template_name="WeatherApp/login.html", next_page="index"), name="login"),
     path("register/", views.register, name="register"),
+    path("lookup/<str:location_name>", views.location_lookup, name='location_lookup'),
 ]

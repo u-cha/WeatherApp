@@ -2,6 +2,8 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login, authenticate
+import requests
+from decouple import config
 
 
 # Create your views here.
@@ -22,3 +24,9 @@ def register(request):
     else:
         form = UserCreationForm()
     return render(request, template_name="WeatherApp/register.html", context={"form": form})
+
+
+def location_lookup(request, location_name):
+    response = requests.get(f'https://api.openweathermap.org/data/2.5/weather?q={location_name}&appid={config("OPEN_WEATHER_API_KEY")}&units=metric')
+    result = response.json()
+    return render(request, template_name="WeatherApp/lookup_results.html", context={"result": result})
