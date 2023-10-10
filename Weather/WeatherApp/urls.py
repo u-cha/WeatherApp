@@ -5,5 +5,5 @@ from .import views
 
 urlpatterns = [
     path("", views.index, name="index"),
-    path("login/", LoginView.as_view(template_name="WeatherApp/login.html")),
+    path("login/", LoginView.as_view(template_name="WeatherApp/login.html"), name="login"),
 ]
