@@ -8,7 +8,7 @@ from decouple import config
 
 # Create your views here.
 def index(request):
-    return HttpResponse("Hello from WeatherApp")
+    return render(request, template_name="WeatherApp/index.html")
 
 
 def register(request):
