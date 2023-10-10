@@ -8,6 +8,9 @@ from decouple import config
 
 # Create your views here.
 def index(request):
+    location_name = request.GET.get('location_name', None)
+    if location_name:
+        return location_lookup(request, location_name)
     return render(request, template_name="WeatherApp/index.html")
 
 
