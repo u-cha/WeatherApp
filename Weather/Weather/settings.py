@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 from pathlib import Path
+from decouple import config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -86,8 +87,8 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'weather_app_db',
-        'USER': 'weather_app_db_user',
-        'PASSWORD': 'admin',
+        'USER': config('DB_USERNAME', default=''),
+        'PASSWORD': config('DB_USER_PASSWORD', default=''),
         'HOST': 'localhost',
         'PORT': '5432',
     }
