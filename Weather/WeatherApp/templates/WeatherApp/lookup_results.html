@@ -1,12 +1,7 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Lookup results</title>
-</head>
-<body>
-{% for key, value in result.items %}
-<ul><b>{{key}}</b> : {{value}}</ul>
-{% endfor %}
-</body>
-</html>
+{% extends 'WeatherApp/base.html' %}
+
+{% block content %}
+    {% for key, value in result.items %}
+        <ul><b>{{key}}</b> : {{value}}</ul>
+    {% endfor %}
+{% endblock %}
