@@ -8,3 +8,7 @@ class Location(models.Model):
     users = models.ManyToManyField(User, related_name='locations')
     latitude = models.DecimalField(max_digits=7, decimal_places=4)
     longitude = models.DecimalField(max_digits=7, decimal_places=4)
+    country = models.CharField()
+
+    def __str__(self):
+        return f"{self.name}: lat={self.latitude}, lon={self.longitude}"
