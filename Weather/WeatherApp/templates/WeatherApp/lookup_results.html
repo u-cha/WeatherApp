@@ -1,7 +1,22 @@
 {% extends 'WeatherApp/base.html' %}
 
 {% block content %}
-    {% for key, value in result.items %}
-        <ul><b>{{key}}</b> : {{value}}</ul>
-    {% endfor %}
+<div class="p-3 text-primary-emphasis bg-primary-subtle border border-primary-subtle rounded-3">
+  <div class="row align-items-start">
+      {%if result %}
+        {% for location in result %}
+
+            <div class="col">
+                <h3>{{location.name}}</h3>
+                <ul>Latitude: {{location.lat |truncatechars:6}}</ul>
+                <ul>Longitude: {{location.lon |truncatechars:6}}</ul>
+                <ul>Country: {{location.country}}</ul>
+            </div>
+
+        {% endfor %}
+      {% else %}
+        Sorry, we were not able to find any location matching your request.
+      {%endif%}
+</div>
+</div>
 {% endblock %}
