@@ -38,5 +38,9 @@ def register(request):
 def location_lookup(request, location_name):
     response = requests.get(
         f'http://api.openweathermap.org/geo/1.0/direct?q={location_name}&limit=5&appid={config("OPEN_WEATHER_API_KEY")}')
-    result = response.json()
+    result = {'location_name': location_name,
+              'is_authenticated': request.user.is_authenticated,
+              'username': request.user.username,
+              'locations': response.json(),
+              }
     return render(request, template_name="WeatherApp/lookup_results.html", context={"result": result})
