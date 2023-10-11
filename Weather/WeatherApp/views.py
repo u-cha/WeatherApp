@@ -29,7 +29,14 @@ def register(request):
     return render(request, template_name="WeatherApp/register.html", context={"form": form})
 
 
+# def location_lookup(request, location_name):
+#     response = requests.get(f'https://api.openweathermap.org/data/2.5/weather?q={location_name}&appid={config("OPEN_WEATHER_API_KEY")}&units=metric')
+#     result = response.json()
+#     return render(request, template_name="WeatherApp/lookup_results.html", context={"result": result})
+
+
 def location_lookup(request, location_name):
-    response = requests.get(f'https://api.openweathermap.org/data/2.5/weather?q={location_name}&appid={config("OPEN_WEATHER_API_KEY")}&units=metric')
+    response = requests.get(
+        f'http://api.openweathermap.org/geo/1.0/direct?q={location_name}&limit=5&appid={config("OPEN_WEATHER_API_KEY")}')
     result = response.json()
     return render(request, template_name="WeatherApp/lookup_results.html", context={"result": result})
