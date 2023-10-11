@@ -2,9 +2,14 @@
 
 {% block content %}
 <div class="p-3 text-primary-emphasis bg-primary-subtle border border-primary-subtle rounded-3">
-  <div class="row align-items-start">
-      {%if result %}
-        {% for location in result %}
+ <div class="p-3 text-primary-emphasis bg-warning-subtle border border-primary-subtle rounded-3">
+      {% if result.is_authenticated %}
+      <p>Hey,{{result.username}}</p>
+      {% endif %}
+ </div>
+    <div class="row align-items-start">
+      {%if result.locations %}
+        {% for location in result.locations %}
 
             <div class="col">
                 <h3>{{location.name}}</h3>
@@ -15,7 +20,7 @@
 
         {% endfor %}
       {% else %}
-        Sorry, we were not able to find any location matching your request.
+      Sorry, we were not able to find any location matching your request "{{result.location_name}}".
       {%endif%}
 </div>
 </div>
