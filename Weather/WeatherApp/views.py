@@ -1,15 +1,15 @@
 from django.shortcuts import render, redirect
-from django.http import HttpResponse
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login, authenticate, logout
 import requests
 from decouple import config
 from . import models, forms
-from django.forms import HiddenInput
 from django.contrib.auth.models import User
+from django.contrib.auth.decorators import login_required
+from django.db.utils import IntegrityError
+from django.db.models import Q
 
 
-# Create your views here.
 def index(request):
     return render(request, template_name="WeatherApp/index.html")
 
@@ -30,33 +30,53 @@ def register(request):
 
 
 def location_lookup(request):
-    location_name = request.GET.get('name')
+    search_query = request.GET.get('name')
     response = requests.get(
-        f'http://api.openweathermap.org/geo/1.0/direct?q={location_name}&limit=5&appid={config("OPEN_WEATHER_API_KEY")}')
-    result = {'location_name': location_name,
-              'is_authenticated': request.user.is_authenticated,
-              'username': request.user.username,
-              'locations': response.json(),
-              }
-    return render(request, template_name="WeatherApp/lookup_results.html", context={"result": result})
+        f'http://api.openweathermap.org/geo/1.0/direct?q={search_query}&limit=5&appid={config("OPEN_WEATHER_API_KEY")}')
+    search_result = {'search_query': search_query,
+                     'locations': response.json(),
+                     }
+    return render(request, template_name="WeatherApp/lookup_results.html", context={"search_result": search_result})
 
 
+@login_required(login_url="login")
 def profile(request):
     if request.method == "POST":
-        form = forms.LocationHiddenForm(request.POST)
+        form = forms.LocationAddHiddenForm(request.POST)
         user = request.user
         location = models.Location(
-                name=form.data["name"],
-                latitude=form.data["latitude"],
-                longitude=form.data["longitude"],
-                country=form.data["country"])
-        location.save()
-        user.locations.add(location)
+            name=form.data["name"],
+            latitude=form.data["latitude"],
+            longitude=form.data["longitude"],
+            country=form.data["country"])
+        try:
+            location.save()
+        except IntegrityError:
+            location = models.Location.objects.get(Q(latitude=location.latitude) & Q(longitude=location.longitude))
+        try:
+            user.locations.add(location)
+        except IntegrityError:
+            pass
+
     user = request.user
     locations = User.objects.get(pk=user.pk).locations.all()
     return render(request, template_name="WeatherApp/profile.html", context={"locations": locations})
 
 
+@login_required(login_url="index")
 def log_out(request):
     logout(request)
     return redirect("index")
+
+
+@login_required(login_url="index")
+def location_delete(request):
+    if request.method == "POST":
+        form = forms.LocationDeleteHiddenForm(request.POST)
+        latitude = form.data["latitude"]
+        longitude = form.data["longitude"]
+        user = request.user
+        location = models.Location.objects.get(latitude=latitude, longitude=longitude)
+        user.locations.remove(location)
+        return redirect("profile")
+
