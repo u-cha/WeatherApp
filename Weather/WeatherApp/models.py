@@ -10,5 +10,8 @@ class Location(models.Model):
     longitude = models.DecimalField(max_digits=7, decimal_places=4)
     country = models.CharField()
 
+    class Meta:
+        unique_together = ('latitude', 'longitude',)
+
     def __str__(self):
         return f"{self.name}: lat={self.latitude}, lon={self.longitude}"
