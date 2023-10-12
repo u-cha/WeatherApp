@@ -4,6 +4,9 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login, authenticate
 import requests
 from decouple import config
+from . import models, forms
+from django.forms import HiddenInput
+from django.contrib.auth.models import User
 
 
 # Create your views here.
@@ -44,3 +47,20 @@ def location_lookup(request, location_name):
               'locations': response.json(),
               }
     return render(request, template_name="WeatherApp/lookup_results.html", context={"result": result})
+
+
+def profile(request):
+    if request.method == "POST":
+        form = forms.LocationHiddenForm(request.POST)
+        user = request.user
+        location = models.Location(
+                name=form.data["name"],
+                latitude=form.data["latitude"],
+                longitude=form.data["longitude"],
+                country=form.data["country"])
+        location.save()
+        user.locations.add(location)
+    user = request.user
+    locations = User.objects.get(pk=user.pk).locations.all()
+    return render(request, template_name="WeatherApp/profile.html", context={"locations": locations})
+
