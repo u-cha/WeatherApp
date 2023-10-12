@@ -52,7 +52,7 @@ def profile(request):
         try:
             location.save()
         except IntegrityError:
-            location = models.Location.objects.get(Q(latitude=location.latitude) & Q(longitude=location.longitude))
+            location = models.Location.objects.get(latitude=form.data["latitude"], longitude=form.data["longitude"])
         try:
             user.locations.add(location)
         except IntegrityError:
