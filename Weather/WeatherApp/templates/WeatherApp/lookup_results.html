@@ -13,13 +13,13 @@
 
             <div class="col">
                 <div class="p-3 text-primary-emphasis bg-warning-subtle border border-primary-subtle rounded-3">
-                <h3>{{location.name}}</h3>
+                <h3>{{location.name}}</h3> <img src="https://flagsapi.com/{{location.country}}/flat/32.png" alt="{{location.country}}">
                 <ul>Latitude: {{location.lat |truncatechars:6}}</ul>
                 <ul>Longitude: {{location.lon |truncatechars:6}}</ul>
-                <ul>Country: {{location.country}}</ul>
+
                 {% if result.is_authenticated %}
-                    <form action="/profile/" method="post">
-                        <input type="hidden" name="location_name" value="{{location.name}}">
+                    <form action="/profile/" method="post">{% csrf_token %}
+                        <input type="hidden" name="name" value="{{location.name}}">
                         <input type="hidden" name="latitude" value="{{location.lat}}">
                         <input type="hidden" name="longitude" value="{{location.lon}}">
                         <input type="hidden" name="country" value="{{location.country}}">
