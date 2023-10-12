@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth import login, authenticate
+from django.contrib.auth import login, authenticate, logout
 import requests
 from decouple import config
 from . import models, forms
@@ -11,9 +11,6 @@ from django.contrib.auth.models import User
 
 # Create your views here.
 def index(request):
-    location_name = request.GET.get('location_name', None)
-    if location_name:
-        return location_lookup(request, location_name)
     return render(request, template_name="WeatherApp/index.html")
 
 
@@ -32,13 +29,8 @@ def register(request):
     return render(request, template_name="WeatherApp/register.html", context={"form": form})
 
 
-# def location_lookup(request, location_name):
-#     response = requests.get(f'https://api.openweathermap.org/data/2.5/weather?q={location_name}&appid={config("OPEN_WEATHER_API_KEY")}&units=metric')
-#     result = response.json()
-#     return render(request, template_name="WeatherApp/lookup_results.html", context={"result": result})
-
-
-def location_lookup(request, location_name):
+def location_lookup(request):
+    location_name = request.GET.get('name')
     response = requests.get(
         f'http://api.openweathermap.org/geo/1.0/direct?q={location_name}&limit=5&appid={config("OPEN_WEATHER_API_KEY")}')
     result = {'location_name': location_name,
@@ -64,3 +56,7 @@ def profile(request):
     locations = User.objects.get(pk=user.pk).locations.all()
     return render(request, template_name="WeatherApp/profile.html", context={"locations": locations})
 
+
+def log_out(request):
+    logout(request)
+    return redirect("index")
