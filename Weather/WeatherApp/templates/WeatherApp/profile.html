@@ -1,10 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
-</head>
-<body>
-$END$
-</body>
-</html>
+{% extends 'WeatherApp/base.html' %}
+
+{% csrf_token %}
+
+{% block content %}
+    Profile Page
+    {% for location in locations %}
+        <p>{{location.name}}</p>
+    {% endfor %}
+{% endblock %}
