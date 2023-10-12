@@ -2,22 +2,24 @@
 
 {% block content %}
 <div class="p-3 text-primary-emphasis bg-primary-subtle border border-primary-subtle rounded-3">
- <div class="p-3 text-primary-emphasis bg-warning-subtle border border-primary-subtle rounded-3">
-      {% if result.is_authenticated %}
-      <p>Hey,{{result.username}}</p>
-      {% endif %}
- </div>
     <div class="row align-items-start">
-      {%if result.locations %}
-        {% for location in result.locations %}
-
+      {%if search_result.locations %}
+        Here's what we were able to find under your request - "{{search_result.search_query}}".
+    </div>
+    <div class="row align-items-start">
+        {% for location in search_result.locations %}
             <div class="col">
                 <div class="p-3 text-primary-emphasis bg-warning-subtle border border-primary-subtle rounded-3">
-                <h3>{{location.name}}</h3> <img src="https://flagsapi.com/{{location.country}}/flat/32.png" alt="{{location.country}}">
-                <ul>Latitude: {{location.lat |truncatechars:6}}</ul>
-                <ul>Longitude: {{location.lon |truncatechars:6}}</ul>
+                <h3>{{location.name}}</h3>
+                <img src="https://flagsapi.com/{{location.country}}/flat/32.png" alt="{{location.country}}">
+                <ul>
 
-                {% if result.is_authenticated %}
+                    <li>Latitude: {{location.lat |truncatechars:6}}</li>
+                    <li>Longitude: {{location.lon |truncatechars:6}}</li>
+                </ul>
+
+
+                {% if request.user.is_authenticated %}
                     <form action="/profile/" method="post">{% csrf_token %}
                         <input type="hidden" name="name" value="{{location.name}}">
                         <input type="hidden" name="latitude" value="{{location.lat}}">
@@ -28,12 +30,13 @@
                     </form>
                 {% endif %}
                 </div>
-            </div>
+             </div>
 
         {% endfor %}
+    </div>
       {% else %}
-      Sorry, we were not able to find any location matching your request "{{result.location_name}}".
+      Sorry, we were not able to find any location matching your request "{{search_result.search_query}}".
       {%endif%}
-</div>
+
 </div>
 {% endblock %}
