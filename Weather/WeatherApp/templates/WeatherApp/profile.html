@@ -5,6 +5,19 @@
 {% block content %}
     Profile Page
     {% for location in locations %}
-        <p>{{location.name}}</p>
+        <div class="w-25 p-3 text-primary-emphasis bg-warning-subtle border border-primary-subtle rounded-3" >
+                <h3>{{location.name}}</h3>
+                <img src="https://flagsapi.com/{{location.country}}/flat/32.png" alt="{{location.country}}">
+                <ul>
+
+                    <li>Latitude: {{location.latitude |truncatechars:6}}</li>
+                    <li>Longitude: {{location.longitude |truncatechars:6}}</li>
+                </ul>
+                <form action="{% url 'index' %}location/delete/" method="post">{% csrf_token %}
+                        <input type="hidden" name="latitude" value="{{location.latitude}}">
+                        <input type="hidden" name="longitude" value="{{location.longitude}}">
+                        <input type="submit" value="Delete from profile">
+                </form>
+        </div>
     {% endfor %}
 {% endblock %}
