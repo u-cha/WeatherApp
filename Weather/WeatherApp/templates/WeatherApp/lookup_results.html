@@ -12,10 +12,22 @@
         {% for location in result.locations %}
 
             <div class="col">
+                <div class="p-3 text-primary-emphasis bg-warning-subtle border border-primary-subtle rounded-3">
                 <h3>{{location.name}}</h3>
                 <ul>Latitude: {{location.lat |truncatechars:6}}</ul>
                 <ul>Longitude: {{location.lon |truncatechars:6}}</ul>
                 <ul>Country: {{location.country}}</ul>
+                {% if result.is_authenticated %}
+                    <form action="/profile/" method="post">
+                        <input type="hidden" name="location_name" value="{{location.name}}">
+                        <input type="hidden" name="latitude" value="{{location.lat}}">
+                        <input type="hidden" name="longitude" value="{{location.lon}}">
+                        <input type="hidden" name="country" value="{{location.country}}">
+
+                        <input type="submit" value="Save location">
+                    </form>
+                {% endif %}
+                </div>
             </div>
 
         {% endfor %}
