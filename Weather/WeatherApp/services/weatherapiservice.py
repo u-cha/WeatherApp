@@ -16,6 +16,7 @@ class WeatherAPIService:
     __API_LOCATION_LIMIT = config("OPEN_WEATHER_API_LOCATION_LIMIT")
     __location_model = Location
     __API_EXCEPTIONS = {
+        400: WeatherAPIRequestError,
         401: WeatherAPIKeyError,
         404: WeatherAPIRequestError,
         429: WeatherAPISubscriptionError,
@@ -27,7 +28,7 @@ class WeatherAPIService:
     }
 
     @classmethod
-    def get_locations_by_name(cls, location_name):
+    def get_locations_by_name(cls, location_name: str) -> WeatherAPIResponse:
         if cls.__validate_location_name(location_name):
             try:
                 payload = {
@@ -63,3 +64,18 @@ class WeatherAPIService:
         longitude = location["lat"]
         country = location["country"]
         return model(name=name, latitude=latitude, longitude=longitude, country=country, )
+
+    @classmethod
+    def get_weather_by_location(cls, location: Location) -> WeatherAPIResponse:
+        try:
+            payload = {
+                "location_name": location.name,
+                "weather": cls.__get_weather(location)
+            }
+            return WeatherAPIResponse(payload=payload)
+        except WeatherAPIError as error:
+            return WeatherAPIResponse(error_message=error.message)
+
+    @classmethod
+    def __get_weather(cls, location: Location) -> Weather:
+        pass
