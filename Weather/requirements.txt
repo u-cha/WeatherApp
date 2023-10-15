@@ -1,11 +1,11 @@
 asgiref==3.7.2
 certifi==2023.7.22
 charset-normalizer==3.3.0
-Django==4.2.5
+Django==4.2.6
 django-debug-toolbar==4.2.0
 idna==3.4
-psycopg==3.1.11
-psycopg2==2.9.7
+psycopg==3.1.12
+psycopg2-binary==2.9.9
 python-decouple==3.8
 python-dotenv==1.0.0
 requests==2.31.0
