@@ -3,11 +3,13 @@ from django import forms
 
 class LocationAddHiddenForm(forms.Form):
     name = forms.CharField(widget=forms.HiddenInput)
-    latitude = forms.DecimalField(widget=forms.HiddenInput, max_digits=7, decimal_places=4)
-    longitude = forms.DecimalField(widget=forms.HiddenInput, max_digits=7, decimal_places=4)
+    latitude = forms.DecimalField(widget=forms.HiddenInput, max_digits=23, decimal_places=20)
+    longitude = forms.DecimalField(widget=forms.HiddenInput, max_digits=23, decimal_places=20)
     country = forms.CharField(widget=forms.HiddenInput)
 
 
-class LocationDeleteHiddenForm(forms.Form):
-    latitude = forms.DecimalField(widget=forms.HiddenInput, max_digits=7, decimal_places=4)
-    longitude = forms.DecimalField(widget=forms.HiddenInput, max_digits=7, decimal_places=4)
+class LocationCoordinatesHiddenForm(forms.Form):
+    name = forms.CharField(widget=forms.HiddenInput)
+    latitude = forms.DecimalField(widget=forms.HiddenInput, max_digits=23, decimal_places=20)
+    longitude = forms.DecimalField(widget=forms.HiddenInput, max_digits=23, decimal_places=20)
+    country = forms.CharField(widget=forms.HiddenInput)
