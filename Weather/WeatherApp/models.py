@@ -1,6 +1,5 @@
 from django.db import models
 from django.contrib.auth.models import User
-import json
 
 
 class Weather:
@@ -10,8 +9,7 @@ class Weather:
         self.description = description
 
     @staticmethod
-    def from_json(weather_json):
-        weather_dict = weather_json
+    def from_dict(weather_dict):
         try:
             short_type = weather_dict["weather"][0]["main"]
             temperature = weather_dict["main"]["temp"]
@@ -24,8 +22,8 @@ class Weather:
 class Location(models.Model):
     name = models.CharField()
     users = models.ManyToManyField(User, related_name='locations')
-    latitude = models.DecimalField(max_digits=13, decimal_places=10)
-    longitude = models.DecimalField(max_digits=13, decimal_places=10)
+    latitude = models.DecimalField(max_digits=23, decimal_places=20)
+    longitude = models.DecimalField(max_digits=23, decimal_places=20)
     country = models.CharField()
 
     class Meta:
