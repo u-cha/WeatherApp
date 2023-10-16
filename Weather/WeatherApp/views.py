@@ -75,10 +75,24 @@ def log_out(request):
 @login_required(login_url="index")
 def location_delete(request):
     if request.method == "POST":
-        form = forms.LocationDeleteHiddenForm(request.POST)
+        form = forms.LocationCoordinatesHiddenForm(request.POST)
         latitude = form.data["latitude"]
         longitude = form.data["longitude"]
         user = request.user
         location = models.Location.objects.get(latitude=latitude, longitude=longitude)
         user.locations.remove(location)
         return redirect("profile")
+
+
+def weather_lookup(request):
+    if request.method == "GET":
+        form = forms.LocationCoordinatesHiddenForm(request.GET)
+        location = models.Location(
+            name=form.data["name"],
+            latitude=form.data["latitude"],
+            longitude=form.data["longitude"],
+            country=form.data["country"])
+        location_with_weather = WeatherAPIService.get_weather_by_location(location).payload
+        return render(request, "WeatherApp/weather_show.html", context={"location_with_weather" : location_with_weather})
+
+
