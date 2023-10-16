@@ -32,10 +32,7 @@ class WeatherAPIService:
     def get_locations_by_name(cls, location_name: str) -> WeatherAPIResponse:
         if cls.__validate_location_name(location_name):
             try:
-                payload = {
-                    "location_name": location_name,
-                    "locations": cls.__get_locations(location_name)
-                }
+                payload = cls.__get_locations(location_name)
                 return WeatherAPIResponse(payload=payload)
             except WeatherAPIError as error:
                 return WeatherAPIResponse(error_message=error.message)
@@ -64,7 +61,7 @@ class WeatherAPIService:
         latitude = location["lon"]
         longitude = location["lat"]
         country = location["country"]
-        return model(name=name, latitude=latitude, longitude=longitude, country=country, )
+        return model(name=name, latitude=latitude, longitude=longitude, country=country,)
 
     @classmethod
     def get_weather_by_location(cls, location: Location) -> WeatherAPIResponse:
