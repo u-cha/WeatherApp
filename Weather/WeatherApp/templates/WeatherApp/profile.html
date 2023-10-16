@@ -3,11 +3,11 @@
 {% csrf_token %}
 
 {% block content %}
-    Profile Page
+    <h3>Profile Page</h3>
     {% for location_with_weather in locations_with_weather %}
         <div class="w-25 p-3 text-primary-emphasis bg-warning-subtle border border-primary-subtle rounded-3" >
                 <h3>{{location_with_weather.location.name}}</h3>
-                <img src="https://flagsapi.com/{{location.country}}/flat/32.png" alt="{{location.country}}">
+                <img src="https://flagsapi.com/{{location_with_weather.location.country}}/flat/32.png" alt="{{location_with_weather.location.country}}">
                 <ul>
 
                     <li>Weather: {{location_with_weather.weather.short_type}}</li>
