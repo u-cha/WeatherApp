@@ -58,8 +58,8 @@ class WeatherAPIService:
     @staticmethod
     def __map_location_to_model(location, model):
         name = location["name"]
-        latitude = location["lon"]
-        longitude = location["lat"]
+        latitude = location["lat"]
+        longitude = location["lon"]
         country = location["country"]
         return model(name=name, latitude=latitude, longitude=longitude, country=country,)
 
@@ -82,6 +82,6 @@ class WeatherAPIService:
         if response.status_code != 200:
             exception = cls.__API_EXCEPTIONS.get(response.status_code, WeatherAPIUnknownError)
             raise exception
-        response_json = response.json()
-        output = Weather.from_json(response_json)
+        response_dict = response.json()
+        output = Weather.from_dict(response_dict)
         return output
