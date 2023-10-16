@@ -3,6 +3,9 @@
 {% block content %}
 <div class="p-3 text-primary-emphasis bg-primary-subtle border border-primary-subtle rounded-3">
     <div class="row align-items-start">
+        {%if search_result.error_message %}
+        {{search_result.error_message}}
+        {% endif %}
       {%if search_result.locations %}
         Here's what we were able to find under your request - "{{search_result.search_query}}".
     </div>
@@ -10,23 +13,26 @@
         {% for location in search_result.locations %}
             <div class="col">
                 <div class="p-3 text-primary-emphasis bg-warning-subtle border border-primary-subtle rounded-3">
-                <h3>{{location.name}}</h3>
+                <h2>{{location.name}}</h2>
                 <img src="https://flagsapi.com/{{location.country}}/flat/32.png" alt="{{location.country}}">
                 <ul>
-
-                    <li>Latitude: {{location.lat |truncatechars:6}}</li>
-                    <li>Longitude: {{location.lon |truncatechars:6}}</li>
+                    <li>Latitude: {{location.latitude |truncatechars:6}}</li>
+                    <li>Longitude: {{location.longitude |truncatechars:6}}</li>
                 </ul>
-
 
                 {% if request.user.is_authenticated %}
                     <form action="/profile/" method="post">{% csrf_token %}
                         <input type="hidden" name="name" value="{{location.name}}">
-                        <input type="hidden" name="latitude" value="{{location.lat}}">
-                        <input type="hidden" name="longitude" value="{{location.lon}}">
+                        <input type="hidden" name="latitude" value="{{location.latitude}}">
+                        <input type="hidden" name="longitude" value="{{location.longitude}}">
                         <input type="hidden" name="country" value="{{location.country}}">
-
                         <input type="submit" value="Save location">
+                    </form>
+                {% else %}
+                    <form action="/weather/show/" method="post">{% csrf_token %}
+                        <input type="hidden" name="latitude" value="{{location.latitude}}">
+                        <input type="hidden" name="longitude" value="{{location.longitude}}">
+                        <input type="submit" value="Show weather">
                     </form>
                 {% endif %}
                 </div>
@@ -35,8 +41,7 @@
         {% endfor %}
     </div>
       {% else %}
-      Sorry, we were not able to find any location matching your request "{{search_result.search_query}}".
+      Sorry, we were unable to find any location matching your request "{{search_result.search_query}}".
       {%endif%}
-
 </div>
 {% endblock %}
