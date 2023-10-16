@@ -1,8 +1,9 @@
 from decouple import config
 import requests
-from Weather.WeatherApp.models import Location
+from ..models import Location
 from .weatherapiexceptions import WeatherAPIFailure, WeatherAPIKeyError, WeatherAPIRequestError, \
     WeatherAPISubscriptionError, WeatherAPIUnknownError, WeatherAPIError
+from ..models import Weather
 
 
 class WeatherAPIResponse:
@@ -69,7 +70,7 @@ class WeatherAPIService:
     def get_weather_by_location(cls, location: Location) -> WeatherAPIResponse:
         try:
             payload = {
-                "location_name": location.name,
+                "location": location,
                 "weather": cls.__get_weather(location)
             }
             return WeatherAPIResponse(payload=payload)
@@ -78,4 +79,12 @@ class WeatherAPIService:
 
     @classmethod
     def __get_weather(cls, location: Location) -> Weather:
-        pass
+        url = f'https://api.openweathermap.org/data/2.5/weather?lat={location.latitude}&lon={location.longitude}' \
+              f'&appid={cls.__API_KEY}&units=metric'
+        response = requests.get(url)
+        if response.status_code != 200:
+            exception = cls.__API_EXCEPTIONS.get(response.status_code, WeatherAPIUnknownError)
+            raise exception
+        response_json = response.json()
+        output = Weather.from_json(response_json)
+        return output
