@@ -9,6 +9,8 @@ from django.contrib.auth.decorators import login_required
 from django.db.utils import IntegrityError
 from django.db.models import Q
 
+from .services.weatherapiservice import WeatherAPIService
+
 
 def index(request):
     return render(request, template_name="WeatherApp/index.html")
@@ -60,7 +62,8 @@ def profile(request):
 
     user = request.user
     locations = User.objects.get(pk=user.pk).locations.all()
-    return render(request, template_name="WeatherApp/profile.html", context={"locations": locations})
+    locations_with_weather = [WeatherAPIService.get_weather_by_location(location).payload for location in locations]
+    return render(request, template_name="WeatherApp/profile.html", context={"locations_with_weather": locations_with_weather})
 
 
 @login_required(login_url="index")
