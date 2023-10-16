@@ -17,26 +17,25 @@ def index(request):
 
 
 def register(request):
-    if request.method == "POST":
-        form = UserCreationForm(request.POST)
-        if form.is_valid():
-            form.save()
-            username = form.cleaned_data.get('username')
-            password = form.cleaned_data.get('password1')
-            user = authenticate(username=username, password=password)
-            login(request, user)
-            return redirect('index')
-    else:
+    if request.method != "POST":
         form = UserCreationForm()
-    return render(request, template_name="WeatherApp/register.html", context={"form": form})
+        return render(request, template_name="WeatherApp/register.html", context={"form": form})
+    form = UserCreationForm(request.POST)
+    if form.is_valid():
+        form.save()
+        username = form.cleaned_data.get('username')
+        password = form.cleaned_data.get('password1')
+        user = authenticate(username=username, password=password)
+        login(request, user)
+        return redirect('index')
 
 
-def location_lookup(request):
-    search_query = request.GET.get('name')
-    response = requests.get(
-        f'http://api.openweathermap.org/geo/1.0/direct?q={search_query}&limit=5&appid={config("OPEN_WEATHER_API_KEY")}')
-    search_result = {'search_query': search_query,
-                     'locations': response.json(),
+def location_search(request):
+    search_query = request.GET.get("name")
+    response = WeatherAPIService.get_locations_by_name(search_query)
+    search_result = {"search_query": search_query,
+                     "locations": response.payload,
+                     "error": response.error_message,
                      }
     return render(request, template_name="WeatherApp/lookup_results.html", context={"search_result": search_result})
 
@@ -63,7 +62,8 @@ def profile(request):
     user = request.user
     locations = User.objects.get(pk=user.pk).locations.all()
     locations_with_weather = [WeatherAPIService.get_weather_by_location(location).payload for location in locations]
-    return render(request, template_name="WeatherApp/profile.html", context={"locations_with_weather": locations_with_weather})
+    return render(request, template_name="WeatherApp/profile.html",
+                  context={"locations_with_weather": locations_with_weather})
 
 
 @login_required(login_url="index")
@@ -82,4 +82,3 @@ def location_delete(request):
         location = models.Location.objects.get(latitude=latitude, longitude=longitude)
         user.locations.remove(location)
         return redirect("profile")
-
