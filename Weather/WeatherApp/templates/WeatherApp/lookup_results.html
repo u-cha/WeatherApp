@@ -29,9 +29,11 @@
                         <input type="submit" value="Save location">
                     </form>
                 {% else %}
-                    <form action="/weather/show/" method="post">{% csrf_token %}
+                    <form action="/weather/show/" method="get">
+                        <input type="hidden" name="name" value="{{location.name}}">
                         <input type="hidden" name="latitude" value="{{location.latitude}}">
                         <input type="hidden" name="longitude" value="{{location.longitude}}">
+                        <input type="hidden" name="country" value="{{location.country}}">
                         <input type="submit" value="Show weather">
                     </form>
                 {% endif %}
