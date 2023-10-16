@@ -10,4 +10,5 @@ urlpatterns = [
     path("profile/", views.profile, name="profile"),
     path("location/search/", views.location_search, name='location_lookup'),
     path("location/delete/", views.location_delete, name="location_delete"),
+    path("weather/show/", views.weather_lookup, name="weather_lookup"),
 ]
