@@ -66,10 +66,7 @@ class WeatherAPIService:
     @classmethod
     def get_weather_by_location(cls, location: Location) -> WeatherAPIResponse:
         try:
-            payload = {
-                "location": location,
-                "weather": cls.__get_weather(location)
-            }
+            payload = cls.__get_weather(location)
             return WeatherAPIResponse(payload=payload)
         except WeatherAPIError as error:
             return WeatherAPIResponse(error_message=error.message)
@@ -83,5 +80,5 @@ class WeatherAPIService:
             exception = cls.__API_EXCEPTIONS.get(response.status_code, WeatherAPIUnknownError)
             raise exception
         response_dict = response.json()
-        output = Weather.from_dict(response_dict)
-        return output
+        weather = Weather.from_dict(response_dict)
+        return weather
