@@ -22,3 +22,6 @@ class Weather(models.Model):
     temperature = models.FloatField()
     description = models.CharField()
     obtained_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Weather in {self.location} obtained at {self.obtained_at}"
