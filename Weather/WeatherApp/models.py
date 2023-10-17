@@ -2,13 +2,6 @@ from django.db import models
 from django.contrib.auth.models import User
 
 
-class Weather:
-    def __init__(self, short_type: str, temperature: float, description: str):
-        self.short_type = short_type
-        self.temperature = temperature
-        self.description = description
-
-
 class Location(models.Model):
     name = models.CharField()
     users = models.ManyToManyField(User, related_name='locations')
@@ -21,3 +14,11 @@ class Location(models.Model):
 
     def __str__(self):
         return f"{self.name}: lat={self.latitude}, lon={self.longitude}"
+
+
+class Weather(models.Model):
+    location = models.ForeignKey(Location, on_delete=models.CASCADE, related_name="weather")
+    short_type = models.CharField()
+    temperature = models.FloatField()
+    description = models.CharField()
+    obtained_at = models.DateTimeField(auto_now_add=True)
