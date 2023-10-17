@@ -42,8 +42,50 @@ def location_search(request):
 
 @login_required(login_url="login")
 def profile(request):
+    user = request.user
+    locations = User.objects.get(pk=user.pk).locations.all()
+    locations_with_weather = [{"location": location,
+                               "weather": WeatherAPIService.get_weather_by_location(location).payload
+                               }
+                              for location in locations]
+    return render(request, template_name="WeatherApp/profile.html",
+                  context={"locations_with_weather": locations_with_weather})
+
+
+@login_required(login_url="index")
+def log_out(request):
+    logout(request)
+    return redirect("index")
+
+
+@login_required(login_url="index")
+def location_delete(request):
     if request.method == "POST":
-        form = forms.LocationAddHiddenForm(request.POST)
+        form = forms.LocationHiddenForm(request.POST)
+        latitude = form.data["latitude"]
+        longitude = form.data["longitude"]
+        user = request.user
+        location = models.Location.objects.get(latitude=latitude, longitude=longitude)
+        user.locations.remove(location)
+        return redirect("profile")
+
+
+def weather_lookup(request):
+    if request.method == "GET":
+        form = forms.LocationHiddenForm(request.GET)
+        location = models.Location(
+            name=form.data["name"],
+            latitude=form.data["latitude"],
+            longitude=form.data["longitude"],
+            country=form.data["country"])
+        weather = WeatherAPIService.get_weather_by_location(location).payload
+        return render(request, "WeatherApp/weather_show.html", context={"location": location, "weather": weather})
+
+
+@login_required(login_url="index")
+def location_add(request):
+    if request.method == "POST":
+        form = forms.LocationHiddenForm(request.POST)
         user = request.user
         location = models.Location(
             name=form.data["name"],
@@ -58,41 +100,5 @@ def profile(request):
             user.locations.add(location)
         except IntegrityError:
             pass
-
-    user = request.user
-    locations = User.objects.get(pk=user.pk).locations.all()
-    locations_with_weather = [WeatherAPIService.get_weather_by_location(location).payload for location in locations]
-    return render(request, template_name="WeatherApp/profile.html",
-                  context={"locations_with_weather": locations_with_weather})
-
-
-@login_required(login_url="index")
-def log_out(request):
-    logout(request)
-    return redirect("index")
-
-
-@login_required(login_url="index")
-def location_delete(request):
-    if request.method == "POST":
-        form = forms.LocationCoordinatesHiddenForm(request.POST)
-        latitude = form.data["latitude"]
-        longitude = form.data["longitude"]
-        user = request.user
-        location = models.Location.objects.get(latitude=latitude, longitude=longitude)
-        user.locations.remove(location)
-        return redirect("profile")
-
-
-def weather_lookup(request):
-    if request.method == "GET":
-        form = forms.LocationCoordinatesHiddenForm(request.GET)
-        location = models.Location(
-            name=form.data["name"],
-            latitude=form.data["latitude"],
-            longitude=form.data["longitude"],
-            country=form.data["country"])
-        location_with_weather = WeatherAPIService.get_weather_by_location(location).payload
-        return render(request, "WeatherApp/weather_show.html", context={"location_with_weather" : location_with_weather})
-
+    return redirect("profile")
 
