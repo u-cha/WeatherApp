@@ -8,16 +8,6 @@ class Weather:
         self.temperature = temperature
         self.description = description
 
-    @staticmethod
-    def from_dict(weather_dict):
-        try:
-            short_type = weather_dict["weather"][0]["main"]
-            temperature = weather_dict["main"]["temp"]
-            description = weather_dict["weather"][0]["description"]
-        except KeyError:
-            return False
-        return Weather(short_type=short_type, temperature=temperature, description=description)
-
 
 class Location(models.Model):
     name = models.CharField()

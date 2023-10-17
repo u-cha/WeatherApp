@@ -1,5 +1,7 @@
 from decouple import config
 import requests
+
+from .weathermapper import WeatherMapper
 from ..models import Location
 from .weatherapiexceptions import WeatherAPIFailure, WeatherAPIKeyError, WeatherAPIRequestError, \
     WeatherAPISubscriptionError, WeatherAPIUnknownError, WeatherAPIError
@@ -80,5 +82,5 @@ class WeatherAPIService:
             exception = cls.__API_EXCEPTIONS.get(response.status_code, WeatherAPIUnknownError)
             raise exception
         response_dict = response.json()
-        weather = Weather.from_dict(response_dict)
+        weather = WeatherMapper.from_dict(response_dict)
         return weather
