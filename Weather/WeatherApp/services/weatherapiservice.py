@@ -1,3 +1,5 @@
+from datetime import datetime, timezone
+
 from decouple import config
 import requests
 
@@ -63,10 +65,10 @@ class WeatherAPIService:
         latitude = location["lat"]
         longitude = location["lon"]
         country = location["country"]
-        return model(name=name, latitude=latitude, longitude=longitude, country=country,)
+        return model(name=name, latitude=latitude, longitude=longitude, country=country, )
 
     @classmethod
-    def get_weather_by_location(cls, location: Location) -> WeatherAPIResponse:
+    def __get_weather_from_api(cls, location: Location) -> WeatherAPIResponse:
         try:
             payload = cls.__get_weather(location)
             return WeatherAPIResponse(payload=payload)
@@ -83,4 +85,19 @@ class WeatherAPIService:
             raise exception
         response_dict = response.json()
         weather = WeatherMapper.from_dict(response_dict)
+        return weather
+
+    @classmethod
+    def get_weather_by_location(cls, location):
+        try:
+            weather = location.weather.latest()
+            obtained_at = weather.obtained_at
+            now = datetime.now(timezone.utc)
+            time_diff = now - obtained_at
+            if time_diff.days > 1:
+                raise Weather.DoesNotExist
+        except Weather.DoesNotExist:
+            weather = cls.__get_weather_from_api(location).payload
+            weather.location = location
+            weather.save()
         return weather
