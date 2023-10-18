@@ -14,6 +14,8 @@
                     <li>Temp: {{location_with_weather.weather.temperature}}</li>
                     <li>Description: {{location_with_weather.weather.description}}</li>
                 </ul>
+                <hr>
+                <i>Weather info updated at: {{location_with_weather.weather.obtained_at.year}}.{{location_with_weather.weather.obtained_at.month}}.{{location_with_weather.weather.obtained_at.day}} {{location_with_weather.weather.obtained_at.hour}}:{{location_with_weather.weather.obtained_at.minute}} {{location_with_weather.weather.obtained_at.tzinfo}}</i>
                 <form action="{% url 'index' %}location/delete/" method="post">{% csrf_token %}
                         <input type="hidden" name="latitude" value="{{location_with_weather.location.latitude}}">
                         <input type="hidden" name="longitude" value="{{location_with_weather.location.longitude}}">

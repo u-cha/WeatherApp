@@ -12,6 +12,8 @@
                 <li>Temp: {{weather.temperature}}</li>
                 <li>Description: {{weather.description}}</li>
             </ul>
+            <hr>
+            <i>Weather info updated at: {{weather.obtained_at.year}}.{{weather.obtained_at.month}}.{{weather.obtained_at.day}} {{weather.obtained_at.hour}}:{{weather.obtained_at.minute}} {{weather.obtained_at.tzinfo}}</i>
 
     </div>
 {% endblock %}
