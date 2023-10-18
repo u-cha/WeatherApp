@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from datetime import datetime, timezone
 
 
 class Location(models.Model):
@@ -21,7 +22,10 @@ class Weather(models.Model):
     short_type = models.CharField()
     temperature = models.FloatField()
     description = models.CharField()
-    obtained_at = models.DateTimeField(auto_now_add=True)
+    obtained_at = models.DateTimeField(auto_now_add=git True)
+
+    class Meta:
+        get_latest_by = "obtained_at"
 
     def __str__(self):
         return f"Weather in {self.location} obtained at {self.obtained_at}"
