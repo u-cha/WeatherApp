@@ -9,6 +9,8 @@ from django.contrib.auth.decorators import login_required
 from django.db.utils import IntegrityError
 from django.db.models import Q
 
+from datetime import datetime, timezone
+
 from .services.weatherapiservice import WeatherAPIService
 
 
@@ -45,7 +47,7 @@ def profile(request):
     user = request.user
     locations = User.objects.get(pk=user.pk).locations.all()
     locations_with_weather = [{"location": location,
-                               "weather": WeatherAPIService.get_weather_by_location(location).payload
+                               "weather": WeatherAPIService.get_weather_by_location(location)
                                }
                               for location in locations]
     return render(request, template_name="WeatherApp/profile.html",
@@ -70,15 +72,16 @@ def location_delete(request):
         return redirect("profile")
 
 
-def weather_lookup(request):
+def weather_show(request):
     if request.method == "GET":
         form = forms.LocationHiddenForm(request.GET)
-        location = models.Location(
-            name=form.data["name"],
-            latitude=form.data["latitude"],
-            longitude=form.data["longitude"],
-            country=form.data["country"])
-        weather = WeatherAPIService.get_weather_by_location(location).payload
+        location = models.Location(**form.to_dict())
+        try:
+            location.save()
+        except IntegrityError:
+            location = models.Location.objects.prefetch_related("weather").get(latitude=form.data["latitude"],
+                                                                               longitude=form.data["longitude"])
+        weather = WeatherAPIService.get_weather_by_location(location)
         return render(request, "WeatherApp/weather_show.html", context={"location": location, "weather": weather})
 
 
@@ -87,11 +90,7 @@ def location_add(request):
     if request.method == "POST":
         form = forms.LocationHiddenForm(request.POST)
         user = request.user
-        location = models.Location(
-            name=form.data["name"],
-            latitude=form.data["latitude"],
-            longitude=form.data["longitude"],
-            country=form.data["country"])
+        location = models.Location(**form.to_dict())
         try:
             location.save()
         except IntegrityError:
@@ -101,4 +100,3 @@ def location_add(request):
         except IntegrityError:
             pass
     return redirect("profile")
-
